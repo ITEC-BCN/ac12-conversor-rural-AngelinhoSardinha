@@ -8,13 +8,38 @@ class SpriteKind:
     npc = SpriteKind.create()
     player = SpriteKind.create()
     enemy = SpriteKind.create()
-"""
+    easter_egg = SpriteKind.create()
 
-=======================================================
-VARIABLES GLOBALES
-=======================================================
+# VARIABLES GLOBALES
+inventario_abierto = False
+precio_leña = 0
+nombre_sin_coste = ""
+partes: List[str] = []
+nombre_articulo = ""
+esta_en_npc = False
+enemigo: Sprite = None
+hit = 0
+proximidad = False
+caballos = 0
+huevos = 0
+cabras = 0
+patatas_kg = 0
+gallinas = 0
+indice = 0
+estado_menu = False
+confirmacion_compra = False
+inside_gim_door2: Sprite = None
+central_park_door2: Sprite = None
+npc_shop: Sprite = None
+outside_gim_door2: Sprite = None
+shop_door2: Sprite = None
+villager: Sprite = None
+precios: List[number] = []
+nombres_visibles: List[str] = []
+vida_arbol = 5
+manejador_A_activo = False
+game_speed = 100
 
-"""
 # =======================================================
 # COLISIONES CON PUERTAS
 # =======================================================
@@ -77,9 +102,10 @@ sprites.on_overlap(SpriteKind.player,
 # =======================================================
 
 def on_up_pressed():
-    global indice
+    global indice, confirmacion_compra
     if estado_menu:
         indice = (indice - 1) % len(nombres_visibles)
+        confirmacion_compra = False
         game.show_long_text("Intercambio: " + nombres_visibles[indice],
             DialogLayout.BOTTOM)
     else:
@@ -91,91 +117,50 @@ def on_up_pressed():
             False)
 controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
 
+def on_on_overlap2(sprite52, otherSprite52):
+    scene.set_background_image(assets.image("""
+        easteregg
+        """))
+sprites.on_overlap(SpriteKind.player, SpriteKind.easter_egg, on_on_overlap2)
+
 # Botón B para cerrar menú O abrir mini menú de inventario
 
 def on_b_pressed():
-    global item_exit
+    global inventario_abierto, estado_menu
     if estado_menu:
         cerrar_menu()
     else:
-        # Abrir mini menú de inventario
-        # Crear items del menú con iconos
-        item_gallinas = miniMenu.create_menu_item("Gallinas: " + ("" + str(gallinas)),
-            assets.image("""
-                gallina
-                """))
-        item_patatas = miniMenu.create_menu_item("Patatas: " + ("" + str(patatas_kg)) + " kg",
-            assets.image("""
-                papa
-                """))
-        item_cabras = miniMenu.create_menu_item("Cabras: " + ("" + str(cabras)),
-            assets.image("""
-                cabra
-                """))
-        item_huevos = miniMenu.create_menu_item("Huevos: " + ("" + str(huevos)),
-            assets.image("""
-                huevo
-                """))
-        item_caballos = miniMenu.create_menu_item("Caballos: " + ("" + str(caballos)),
-            img("""
-                1 1 1 1 1 d d d d d d 1 1 1 1 1
-                d d d d 1 1 1 1 1 1 1 1 1 d d d
-                1 1 1 1 1 1 1 1 1 f e f 1 1 1 1
-                1 1 1 1 1 d d b b f c e 1 1 1 1
-                d d d d 1 1 1 f f e f e 1 d d d
-                1 1 1 1 1 d d c c c c 1 1 1 1 1
-                d d d d c e e e e e e 1 1 d d d
-                d d c c e c e b b f f f 1 d d d
-                1 c f f e f f f f d c 1 1 1 1 1
-                d c d f f f 1 1 1 1 b 1 1 d d d
-                1 f 1 f 1 e d d d d d 1 1 1 1 1
-                1 1 1 c 1 c 1 1 1 1 1 1 1 1 1 1
-                1 1 1 d 1 d 1 1 1 1 1 1 1 1 1 1
-                1 1 1 1 1 d b d d d d 1 1 1 1 1
-                d d d d 1 1 1 1 1 1 1 1 1 d d d
-                1 1 1 1 1 d d d d d d 1 1 1 1 1
-                """))
-        item_lena = miniMenu.create_menu_item("Leña: " + ("" + str(info.score())) + " kg",
-            assets.image("""
-                tronco
-                """))
-        item_exit = miniMenu.create_menu_item("salir", assets.image("""
-            door3
-            """))
-        # Crear el menú con todos los items
-        menu_inventario = miniMenu.create_menu_from_array([item_gallinas,
-                item_patatas,
-                item_cabras,
-                item_huevos,
-                item_caballos,
-                item_lena,
-                item_exit])
-        menu_inventario.set_dimensions(120, 100)
-        # Mostrar el menú sin mensaje adicional (LÍNEA ELIMINADA)
-        menu_inventario.set_position(80, 60)
+        if inventario_abierto:
+            inventario_abierto = False
+        else:
+            inventario_abierto = True
+            game.show_long_text("Inventario:\nGallinas: " + ("" + str(gallinas)) + "\nPatatas: " + ("" + str(patatas_kg)) + " kg\nCabras: " + ("" + str(cabras)) + "\nHuevos: " + ("" + str(huevos)) + "\nCaballos: " + ("" + str(caballos)) + "\nLeña: " + ("" + str(info.score())) + " kg\n\nPresiona B para cerrar.",
+                DialogLayout.BOTTOM)
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
 # =======================================================
 # FUNCIONES DE MENÚ/TRUEQUE
 # =======================================================
+
 def abrir_menu():
-    global estado_menu, indice
+    global estado_menu, indice, confirmacion_compra
     if not (estado_menu):
         estado_menu = True
         indice = 0
+        confirmacion_compra = False
         controller.move_sprite(villager, 0, 0)
         # Detener movimiento
         game.show_long_text("Hola guapo, ¿quieres comprar cositas?", DialogLayout.BOTTOM)
-        pause(500)
         game.show_long_text("Intercambio: " + nombres_visibles[indice] + """
-                Usa Arriba/Abajo para navegar. A para comprar. B para salir.
+                Usa Arriba/Abajo para navegar. A dos veces para comprar. B para salir.
                 """,
             DialogLayout.BOTTOM)
+
 # =======================================================
 # COLISIÓN CON ENEMIGO
 # =======================================================
 
-def on_on_overlap2(sprite6, otherSprite6):
+def on_on_overlap3(sprite6, otherSprite6):
     global proximidad, hit
     proximidad = True
     if hit == vida_arbol:
@@ -183,17 +168,25 @@ def on_on_overlap2(sprite6, otherSprite6):
         info.change_score_by(3)
         proximidad = False
         hit = 0
-sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap2)
+sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap3)
 
 # =======================================================
 # BOTÓN A
 # =======================================================
 
 def on_a_pressed():
-    global hit
+    global hit, estado_menu, esta_en_npc, confirmacion_compra
     if estado_menu:
-        # Si el menú está abierto, comprar
-        procesar_trueque()
+        # Si el menú está abierto, verificar confirmación
+        if confirmacion_compra:
+            # Segunda pulsación: comprar
+            procesar_trueque()
+            confirmacion_compra = False
+        else:
+            # Primera pulsación: pedir confirmación
+            confirmacion_compra = True
+            game.show_long_text("Presiona A de nuevo para confirmar compra de: " + nombres_visibles[indice],
+                DialogLayout.BOTTOM)
     elif esta_en_npc:
         # Si está sobre el NPC, abrir menú
         abrir_menu()
@@ -219,7 +212,7 @@ def on_left_pressed():
             False)
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
-def on_on_overlap3(sprite5, otherSprite5):
+def on_on_overlap4(sprite5, otherSprite5):
     global outside_gim_door2, enemigo
     scene.set_background_image(assets.image("""
         gim
@@ -277,7 +270,7 @@ def on_on_overlap3(sprite5, otherSprite5):
     sprites.destroy(central_park_door2)
 sprites.on_overlap(SpriteKind.player,
     SpriteKind.inside_gim_door,
-    on_on_overlap3)
+    on_on_overlap4)
 
 def on_right_pressed():
     if not (estado_menu):
@@ -289,7 +282,7 @@ def on_right_pressed():
             False)
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
-def on_on_overlap4(sprite3, otherSprite3):
+def on_on_overlap5(sprite3, otherSprite3):
     global central_park_door2, npc_shop
     scene.set_background_image(assets.image("""
         tienda
@@ -321,12 +314,13 @@ def on_on_overlap4(sprite3, otherSprite3):
     npc_shop.set_position(112, 37)
     sprites.destroy(shop_door2)
     sprites.destroy(outside_gim_door2)
-sprites.on_overlap(SpriteKind.player, SpriteKind.shop_door, on_on_overlap4)
+sprites.on_overlap(SpriteKind.player, SpriteKind.shop_door, on_on_overlap5)
 
 def on_down_pressed():
-    global indice
+    global indice, confirmacion_compra
     if estado_menu:
         indice = (indice + 1) % len(nombres_visibles)
+        confirmacion_compra = False
         game.show_long_text("Intercambio: " + nombres_visibles[indice],
             DialogLayout.BOTTOM)
     else:
@@ -339,7 +333,7 @@ def on_down_pressed():
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def procesar_trueque():
-    global nombre_articulo, partes, nombre_sin_coste, precio_leña, gallinas, patatas_kg, cabras, huevos, caballos
+    global nombre_articulo, partes, nombre_sin_coste, precio_leña, gallinas, patatas_kg, cabras, huevos, caballos, indice
     nombre_articulo = nombres_visibles[indice]
     # Extraer el nombre sin el coste (antes del paréntesis)
     partes = nombre_articulo.split("(")
@@ -368,7 +362,7 @@ def procesar_trueque():
         game.show_long_text("¡Necesitas " + ("" + str(precio_leña)) + " kg de leña! Solo tienes " + ("" + str(info.score())) + " kg.",
             DialogLayout.BOTTOM)
 
-def on_on_overlap5(sprite2, otherSprite2):
+def on_on_overlap6(sprite2, otherSprite2):
     global inside_gim_door2, central_park_door2
     scene.set_background_image(assets.image("""
         gim_door
@@ -419,54 +413,29 @@ def on_on_overlap5(sprite2, otherSprite2):
     sprites.destroy(enemigo)
 sprites.on_overlap(SpriteKind.player,
     SpriteKind.outside_gim_door,
-    on_on_overlap5)
+    on_on_overlap6)
 
 def cerrar_menu():
-    global estado_menu
+    global estado_menu, confirmacion_compra
     if estado_menu:
         estado_menu = False
+        confirmacion_compra = False
         controller.move_sprite(villager, 100, 100)
         # Restaurar movimiento
         game.show_long_text("Chao guapo, pronto nos veremos en mi habitación ;3",
             DialogLayout.BOTTOM)
         # Retroceder al jugador en X para alejarlo del NPC
         villager.set_position(villager.x - 10, villager.y)
+
 # =======================================================
 # COLISIÓN CON NPC
 # =======================================================
 
-def on_on_overlap6(sprite, otherSprite):
+def on_on_overlap7(sprite, otherSprite):
     global esta_en_npc
     esta_en_npc = True
-sprites.on_overlap(SpriteKind.player, SpriteKind.npc, on_on_overlap6)
+sprites.on_overlap(SpriteKind.player, SpriteKind.npc, on_on_overlap7)
 
-precio_leña = 0
-nombre_sin_coste = ""
-partes: List[str] = []
-nombre_articulo = ""
-esta_en_npc = False
-enemigo: Sprite = None
-hit = 0
-proximidad = False
-item_exit: miniMenu.MenuItem = None
-caballos = 0
-huevos = 0
-cabras = 0
-patatas_kg = 0
-gallinas = 0
-indice = 0
-estado_menu = False
-inside_gim_door2: Sprite = None
-central_park_door2: Sprite = None
-npc_shop: Sprite = None
-outside_gim_door2: Sprite = None
-shop_door2: Sprite = None
-villager: Sprite = None
-precios: List[number] = []
-nombres_visibles: List[str] = []
-vida_arbol = 0
-manejador_A_activo = False
-game_speed = 100
 vida_arbol = 5
 nombres_visibles = ["Gallina (6 kg Leña)",
     "1.5 kg Patata (2 kg Leña)",
@@ -474,6 +443,7 @@ nombres_visibles = ["Gallina (6 kg Leña)",
     "12 Huevos (3 kg Leña)",
     "Caballo (12 kg Leña)"]
 precios = [6, 2, 5, 3, 12]
+
 # =======================================================
 # INICIALIZACIÓN
 # =======================================================
@@ -519,6 +489,9 @@ shop_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         """),
     SpriteKind.shop_door)
+easter_egg2 = sprites.create(assets.image("""
+    door3
+    """), SpriteKind.easter_egg)
 outside_gim_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -539,10 +512,12 @@ outside_gim_door2 = sprites.create(img("""
         """),
     SpriteKind.outside_gim_door)
 shop_door2.set_position(136, 105)
+easter_egg2.set_position(150, 1)
 outside_gim_door2.set_position(12, 101)
 villager.set_position(76, 101)
 controller.move_sprite(villager, 100, 100)
 villager.set_bounce_on_wall(True)
+
 # =======================================================
 # BUCLE DE ACTUALIZACIÓN
 # =======================================================
