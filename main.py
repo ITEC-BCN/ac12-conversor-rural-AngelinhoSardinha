@@ -1,160 +1,146 @@
-namespace SpriteKind {
-    export const coordenadas = SpriteKind.create()
-    export const shop_door = SpriteKind.create()
-    export const outside_gim_door = SpriteKind.create()
-    export const central_park_door = SpriteKind.create()
-    export const inside_gim_door = SpriteKind.create()
-    export const npc = SpriteKind.create()
-    export const player = SpriteKind.create()
-    export const enemy = SpriteKind.create()
-}
+@namespace
+class SpriteKind:
+    coordenadas = SpriteKind.create()
+    shop_door = SpriteKind.create()
+    outside_gim_door = SpriteKind.create()
+    central_park_door = SpriteKind.create()
+    inside_gim_door = SpriteKind.create()
+    npc = SpriteKind.create()
+    player = SpriteKind.create()
+    enemy = SpriteKind.create()
 
-//  =======================================================
-//  VARIABLES GLOBALES
-//  =======================================================
-let esta_en_npc = false
-let manejador_A_activo = false
-let caballos = 0
-let huevos = 0
-let cabras = 0
-let gallinas = 0
-let precio_leña = 0
-let nombre_sin_coste = ""
-let nombre_articulo = ""
-let enemigo : Sprite = null
-let hit = 0
-let proximidad = false
-let indice = 0
-let inside_gim_door2 : Sprite = null
-let central_park_door2 : Sprite = null
-let npc_shop : Sprite = null
-let outside_gim_door2 : Sprite = null
-let shop_door2 : Sprite = null
-let villager : Sprite = null
-let precios : number[] = []
-let nombres_visibles : string[] = []
-let vida_arbol = 0
-let estado_menu = false
-let game_speed = 100
+# =======================================================
+# VARIABLES GLOBALES
+# =======================================================
+esta_en_npc = False
+manejador_A_activo = False
+caballos = 0
+huevos = 0
+cabras = 0
+gallinas = 0
+precio_leña = 0
+nombre_sin_coste = ""
+nombre_articulo = ""
+enemigo: Sprite = None
+hit = 0
+proximidad = False
+indice = 0
+inside_gim_door2: Sprite = None
+central_park_door2: Sprite = None
+npc_shop: Sprite = None
+outside_gim_door2: Sprite = None
+shop_door2: Sprite = None
+villager: Sprite = None
+precios: List[number] = []
+nombres_visibles: List[str] = []
+vida_arbol = 0
+estado_menu = False
+game_speed = 100
 vida_arbol = 5
-let patatas_kg = 0
-nombres_visibles = ["Gallina (6 kg Leña)", "1.5 kg Patata (2 kg Leña)", "Cabra (5 kg Leña)", "12 Huevos (3 kg Leña)", "Caballo (12 kg Leña)"]
+patatas_kg = 0
+
+nombres_visibles = ["Gallina (6 kg Leña)",
+    "1.5 kg Patata (2 kg Leña)",
+    "Cabra (5 kg Leña)",
+    "12 Huevos (3 kg Leña)",
+    "Caballo (12 kg Leña)"]
 precios = [6, 2, 5, 3, 12]
-//  =======================================================
-//  FUNCIONES DE MENÚ/TRUEQUE
-//  =======================================================
-function abrir_menu() {
-    
-    if (!estado_menu) {
-        estado_menu = true
+
+# =======================================================
+# FUNCIONES DE MENÚ/TRUEQUE
+# =======================================================
+def abrir_menu():
+    global estado_menu, indice
+    if not estado_menu:
+        estado_menu = True
         indice = 0
-        controller.moveSprite(villager, 0, 0)
-        //  Detener movimiento
-        game.showLongText("Hola guapo, ¿quieres comprar cositas?", DialogLayout.Bottom)
+        controller.move_sprite(villager, 0, 0)  # Detener movimiento
+        game.show_long_text("Hola guapo, ¿quieres comprar cositas?", DialogLayout.BOTTOM)
         pause(500)
-        game.showLongText("Intercambio: " + nombres_visibles[indice] + `
-Usa Arriba/Abajo para navegar. A para comprar. B para salir.`, DialogLayout.Bottom)
-    }
-    
-}
+        game.show_long_text("Intercambio: " + nombres_visibles[indice] + "\nUsa Arriba/Abajo para navegar. A para comprar. B para salir.",
+            DialogLayout.BOTTOM)
 
-function cerrar_menu() {
-    
-    if (estado_menu) {
-        estado_menu = false
-        controller.moveSprite(villager, 100, 100)
-        //  Restaurar movimiento
-        game.showLongText("Chao guapo, pronto nos veremos en mi habitación ;3", DialogLayout.Bottom)
-        //  Retroceder al jugador automáticamente para evitar solapamiento
-        villager.setPosition(villager.x, villager.y + 15)
-    }
-    
-}
+def cerrar_menu():
+    global estado_menu
+    if estado_menu:
+        estado_menu = False
+        controller.move_sprite(villager, 100, 100)  # Restaurar movimiento
+        game.show_long_text("Chao guapo, pronto nos veremos en mi habitación ;3", DialogLayout.BOTTOM)
+        # Retroceder al jugador automáticamente para evitar solapamiento
+        villager.set_position(villager.x, villager.y + 15)
 
-function procesar_trueque() {
-    
+def procesar_trueque():
+    global nombre_articulo, nombre_sin_coste, precio_leña, gallinas, patatas_kg, cabras, huevos, caballos
     nombre_articulo = nombres_visibles[indice]
-    //  Extraer el nombre sin el coste (antes del paréntesis)
-    let partes = nombre_articulo.split("(")
+    # Extraer el nombre sin el coste (antes del paréntesis)
+    partes = nombre_articulo.split("(")
     nombre_sin_coste = partes[0]
-    //  Eliminar espacios manualmente
-    while (nombre_sin_coste.charAt(nombre_sin_coste.length - 1) == " ") {
+    # Eliminar espacios manualmente
+    while nombre_sin_coste.char_at(nombre_sin_coste.length - 1) == " ":
         nombre_sin_coste = nombre_sin_coste.substr(0, nombre_sin_coste.length - 1)
-    }
     precio_leña = precios[indice]
-    if (info.score() >= precio_leña) {
-        info.changeScoreBy(-1 * precio_leña)
-        //  Inventario
-        if (nombre_sin_coste.indexOf("Gallina") >= 0) {
-            gallinas += 1
-        } else if (nombre_sin_coste.indexOf("Patata") >= 0) {
-            patatas_kg += 1.5
-        } else if (nombre_sin_coste.indexOf("Cabra") >= 0) {
-            cabras += 1
-        } else if (nombre_sin_coste.indexOf("Huevos") >= 0) {
-            huevos += 12
-        } else if (nombre_sin_coste.indexOf("Caballo") >= 0) {
-            caballos += 1
-        }
+    
+    if info.score() >= precio_leña:
+        info.change_score_by(-1 * precio_leña)
         
-        game.showLongText("¡Trueque realizado! Compraste: " + nombre_sin_coste + "\nLeña restante: " + ("" + info.score()) + " kg.", DialogLayout.Bottom)
+        # Inventario
+        if "Gallina" in nombre_sin_coste:
+            gallinas += 1
+        elif "Patata" in nombre_sin_coste:
+            patatas_kg += 1.5
+        elif "Cabra" in nombre_sin_coste:
+            cabras += 1
+        elif "Huevos" in nombre_sin_coste:
+            huevos += 12
+        elif "Caballo" in nombre_sin_coste:
+            caballos += 1
+        
+        game.show_long_text("¡Trueque realizado! Compraste: " + nombre_sin_coste + "\nLeña restante: " + str(info.score()) + " kg.",
+            DialogLayout.BOTTOM)
         cerrar_menu()
-    } else {
-        game.showLongText("¡Necesitas " + ("" + precio_leña) + " kg de leña! Solo tienes " + ("" + info.score()) + " kg.", DialogLayout.Bottom)
-    }
-    
-}
+    else:
+        game.show_long_text("¡Necesitas " + str(precio_leña) + " kg de leña! Solo tienes " + str(info.score()) + " kg.",
+            DialogLayout.BOTTOM)
 
-//  =======================================================
-//  CONTROLES DE MOVIMIENTO
-//  =======================================================
-controller.up.onEvent(ControllerButtonEvent.Pressed, function on_up_pressed() {
-    
-    if (estado_menu) {
-        indice = (indice - 1) % nombres_visibles.length
-        game.showLongText("Intercambio: " + nombres_visibles[indice], DialogLayout.Bottom)
-    } else {
-        animation.runImageAnimation(villager, assets.animation`myAnim4`, 200, false)
-    }
-    
-})
-controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
-    
-    if (estado_menu) {
-        indice = (indice + 1) % nombres_visibles.length
-        game.showLongText("Intercambio: " + nombres_visibles[indice], DialogLayout.Bottom)
-    } else {
-        animation.runImageAnimation(villager, assets.animation`myAnim1`, 200, false)
-    }
-    
-})
-controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
-    if (!estado_menu) {
-        animation.runImageAnimation(villager, assets.animation`myAnim0`, 200, false)
-    }
-    
-})
-controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
-    if (!estado_menu) {
-        animation.runImageAnimation(villager, assets.animation`monkey_right`, 200, false)
-    }
-    
-})
-//  Botón B para cerrar menú O abrir mini menú de inventario
-controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
-    let item_gallinas: miniMenu.MenuItem;
-    let item_patatas: miniMenu.MenuItem;
-    let item_cabras: miniMenu.MenuItem;
-    let item_huevos: miniMenu.MenuItem;
-    let item_caballos: miniMenu.MenuItem;
-    let item_lena: miniMenu.MenuItem;
-    let menu_inventario: miniMenu.MenuSprite;
-    if (estado_menu) {
+# =======================================================
+# CONTROLES DE MOVIMIENTO
+# =======================================================
+def on_up_pressed():
+    global indice
+    if estado_menu:
+        indice = (indice - 1) % len(nombres_visibles)
+        game.show_long_text("Intercambio: " + nombres_visibles[indice], DialogLayout.BOTTOM)
+    else:
+        animation.run_image_animation(villager, assets.animation("myAnim4"), 200, False)
+controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
+
+def on_down_pressed():
+    global indice
+    if estado_menu:
+        indice = (indice + 1) % len(nombres_visibles)
+        game.show_long_text("Intercambio: " + nombres_visibles[indice], DialogLayout.BOTTOM)
+    else:
+        animation.run_image_animation(villager, assets.animation("myAnim1"), 200, False)
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
+
+def on_left_pressed():
+    if not estado_menu:
+        animation.run_image_animation(villager, assets.animation("myAnim0"), 200, False)
+controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
+
+def on_right_pressed():
+    if not estado_menu:
+        animation.run_image_animation(villager, assets.animation("monkey_right"), 200, False)
+controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
+
+# Botón B para cerrar menú O abrir mini menú de inventario
+def on_b_pressed():
+    if estado_menu:
         cerrar_menu()
-    } else {
-        //  Abrir mini menú de inventario
-        //  Crear items del menú con iconos
-        item_gallinas = miniMenu.createMenuItem("Gallinas: " + ("" + gallinas), img`
+    else:
+        # Abrir mini menú de inventario
+        # Crear items del menú con iconos
+        item_gallinas = miniMenu.create_menu_item("Gallinas: " + str(gallinas), img("""
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . e e . . . . .
@@ -171,8 +157,8 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             . . . . . . e . . . e . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-        `)
-        item_patatas = miniMenu.createMenuItem("Patatas: " + ("" + patatas_kg) + " kg", img`
+        """))
+        item_patatas = miniMenu.create_menu_item("Patatas: " + str(patatas_kg) + " kg", img("""
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
@@ -189,8 +175,8 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-        `)
-        item_cabras = miniMenu.createMenuItem("Cabras: " + ("" + cabras), img`
+        """))
+        item_cabras = miniMenu.create_menu_item("Cabras: " + str(cabras), img("""
             . . . . . . . . . . . . . . . .
             . . . . . f . . . f . . . . . .
             . . . . f f f . f f f . . . . .
@@ -207,8 +193,8 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             . . . . f f . . . f f . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-        `)
-        item_huevos = miniMenu.createMenuItem("Huevos: " + ("" + huevos), img`
+        """))
+        item_huevos = miniMenu.create_menu_item("Huevos: " + str(huevos), img("""
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
@@ -225,8 +211,8 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-        `)
-        item_caballos = miniMenu.createMenuItem("Caballos: " + ("" + caballos), img`
+        """))
+        item_caballos = miniMenu.create_menu_item("Caballos: " + str(caballos), img("""
             . . . . . . . . . . . . . . . .
             . . . . . . f f f f . . . . . .
             . . . . . f f f f f f . . . . .
@@ -243,8 +229,8 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             . . . . f f . . . . f f . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-        `)
-        item_lena = miniMenu.createMenuItem("Leña: " + ("" + info.score()) + " kg", img`
+        """))
+        item_lena = miniMenu.create_menu_item("Leña: " + str(info.score()) + " kg", img("""
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . e e e e . . . . . .
@@ -261,44 +247,51 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function on_b_pressed() {
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
             . . . . . . . . . . . . . . . .
-        `)
-        //  Crear el menú con todos los items
-        menu_inventario = miniMenu.createMenuFromArray([item_gallinas, item_patatas, item_cabras, item_huevos, item_caballos, item_lena])
-        //  Mostrar el menú y pausar el juego
-        menu_inventario.setPosition(80, 60)
-        game.showLongText("Inventario - Presiona A para cerrar", DialogLayout.Bottom)
-        sprites.destroy(menu_inventario)
-    }
-    
-})
-//  =======================================================
-//  BOTÓN A
-//  =======================================================
-controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
-    
-    if (estado_menu) {
-        //  Si el menú está abierto, comprar
-        procesar_trueque()
-    } else if (esta_en_npc) {
-        //  Si está sobre el NPC, abrir menú
-        abrir_menu()
-    } else {
-        //  Acción normal: atacar
-        animation.runImageAnimation(villager, assets.animation`myAnim3`, 200, false)
-        if (proximidad) {
-            hit += 1
-        }
+        """))
         
-    }
-    
-})
-//  =======================================================
-//  COLISIONES CON PUERTAS
-//  =======================================================
-sprites.onOverlap(SpriteKind.player, SpriteKind.central_park_door, function on_on_overlap(sprite4: Sprite, otherSprite4: Sprite) {
-    
-    scene.setBackgroundImage(assets.image`paisaje`)
-    shop_door2 = sprites.create(img`
+        # Crear el menú con todos los items
+        menu_inventario = miniMenu.create_menu_from_array([
+            item_gallinas,
+            item_patatas,
+            item_cabras,
+            item_huevos,
+            item_caballos,
+            item_lena
+        ])
+        
+        # Mostrar el menú y pausar el juego
+        menu_inventario.set_position(80, 60)
+        game.show_long_text("Inventario - Presiona A para cerrar", DialogLayout.BOTTOM)
+        sprites.destroy(menu_inventario)
+        
+controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
+
+# =======================================================
+# BOTÓN A
+# =======================================================
+def on_a_pressed():
+    global hit
+    if estado_menu:
+        # Si el menú está abierto, comprar
+        procesar_trueque()
+    elif esta_en_npc:
+        # Si está sobre el NPC, abrir menú
+        abrir_menu()
+    else:
+        # Acción normal: atacar
+        animation.run_image_animation(villager, assets.animation("myAnim3"), 200, False)
+        if proximidad:
+            hit += 1
+
+controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
+
+# =======================================================
+# COLISIONES CON PUERTAS
+# =======================================================
+def on_on_overlap(sprite4, otherSprite4):
+    global shop_door2, outside_gim_door2
+    scene.set_background_image(assets.image("paisaje"))
+    shop_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -315,8 +308,8 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.central_park_door, function on_o
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-        `, SpriteKind.shop_door)
-    outside_gim_door2 = sprites.create(img`
+        """), SpriteKind.shop_door)
+    outside_gim_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -333,18 +326,19 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.central_park_door, function on_o
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-        `, SpriteKind.outside_gim_door)
-    villager.setPosition(76, 101)
-    outside_gim_door2.setPosition(12, 101)
-    shop_door2.setPosition(136, 105)
+        """), SpriteKind.outside_gim_door)
+    villager.set_position(76, 101)
+    outside_gim_door2.set_position(12, 101)
+    shop_door2.set_position(136, 105)
     sprites.destroy(npc_shop)
     sprites.destroy(central_park_door2)
     sprites.destroy(inside_gim_door2)
-})
-sprites.onOverlap(SpriteKind.player, SpriteKind.shop_door, function on_on_overlap4(sprite3: Sprite, otherSprite3: Sprite) {
-    
-    scene.setBackgroundImage(assets.image`tienda`)
-    central_park_door2 = sprites.create(img`
+sprites.on_overlap(SpriteKind.player, SpriteKind.central_park_door, on_on_overlap)
+
+def on_on_overlap4(sprite3, otherSprite3):
+    global central_park_door2, npc_shop
+    scene.set_background_image(assets.image("tienda"))
+    central_park_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -361,18 +355,19 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.shop_door, function on_on_overla
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-        `, SpriteKind.central_park_door)
-    npc_shop = sprites.create(assets.image`door3`, SpriteKind.npc)
-    villager.setPosition(106, 91)
-    central_park_door2.setPosition(106, 109)
-    npc_shop.setPosition(112, 37)
+        """), SpriteKind.central_park_door)
+    npc_shop = sprites.create(assets.image("door3"), SpriteKind.npc)
+    villager.set_position(106, 91)
+    central_park_door2.set_position(106, 109)
+    npc_shop.set_position(112, 37)
     sprites.destroy(shop_door2)
     sprites.destroy(outside_gim_door2)
-})
-sprites.onOverlap(SpriteKind.player, SpriteKind.inside_gim_door, function on_on_overlap3(sprite5: Sprite, otherSprite5: Sprite) {
-    
-    scene.setBackgroundImage(assets.image`gim`)
-    outside_gim_door2 = sprites.create(img`
+sprites.on_overlap(SpriteKind.player, SpriteKind.shop_door, on_on_overlap4)
+
+def on_on_overlap3(sprite5, otherSprite5):
+    global outside_gim_door2, enemigo
+    scene.set_background_image(assets.image("gim"))
+    outside_gim_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -389,8 +384,8 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.inside_gim_door, function on_on_
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-        `, SpriteKind.outside_gim_door)
-    enemigo = sprites.create(img`
+        """), SpriteKind.outside_gim_door)
+    enemigo = sprites.create(img("""
         ......cc66......
         .....c6576c.....
         ....c677576c....
@@ -415,17 +410,18 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.inside_gim_door, function on_on_
         ......eeee......
         .....eeeeee.....
         .......ee.......
-        `, SpriteKind.enemy)
-    villager.setPosition(82, 99)
-    outside_gim_door2.setPosition(81, 110)
-    enemigo.setPosition(113, 60)
+        """), SpriteKind.enemy)
+    villager.set_position(82, 99)
+    outside_gim_door2.set_position(81, 110)
+    enemigo.set_position(113, 60)
     sprites.destroy(inside_gim_door2)
     sprites.destroy(central_park_door2)
-})
-sprites.onOverlap(SpriteKind.player, SpriteKind.outside_gim_door, function on_on_overlap5(sprite2: Sprite, otherSprite2: Sprite) {
-    
-    scene.setBackgroundImage(assets.image`gim_door`)
-    inside_gim_door2 = sprites.create(img`
+sprites.on_overlap(SpriteKind.player, SpriteKind.inside_gim_door, on_on_overlap3)
+
+def on_on_overlap5(sprite2, otherSprite2):
+    global inside_gim_door2, central_park_door2
+    scene.set_background_image(assets.image("gim_door"))
+    inside_gim_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -442,8 +438,8 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.outside_gim_door, function on_on
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-        `, SpriteKind.inside_gim_door)
-    central_park_door2 = sprites.create(img`
+        """), SpriteKind.inside_gim_door)
+    central_park_door2 = sprites.create(img("""
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
@@ -460,54 +456,57 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.outside_gim_door, function on_on
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . .
-        `, SpriteKind.central_park_door)
-    villager.setPosition(129, 20)
-    inside_gim_door2.setPosition(87, 50)
-    central_park_door2.setPosition(144, 7)
+        """), SpriteKind.central_park_door)
+    villager.set_position(129, 20)
+    inside_gim_door2.set_position(87, 50)
+    central_park_door2.set_position(144, 7)
     sprites.destroy(shop_door2)
     sprites.destroy(outside_gim_door2)
     sprites.destroy(enemigo)
-})
-//  =======================================================
-//  COLISIÓN CON ENEMIGO
-//  =======================================================
-sprites.onOverlap(SpriteKind.player, SpriteKind.enemy, function on_on_overlap2(sprite6: Sprite, otherSprite6: Sprite) {
-    
-    proximidad = true
-    if (hit == vida_arbol) {
+sprites.on_overlap(SpriteKind.player, SpriteKind.outside_gim_door, on_on_overlap5)
+
+# =======================================================
+# COLISIÓN CON ENEMIGO
+# =======================================================
+def on_on_overlap2(sprite6, otherSprite6):
+    global proximidad, hit
+    proximidad = True
+    if hit == vida_arbol:
         sprites.destroy(enemigo)
-        info.changeScoreBy(3)
-        proximidad = false
+        info.change_score_by(3)
+        proximidad = False
         hit = 0
-    }
+sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap2)
+
+# =======================================================
+# COLISIÓN CON NPC
+# =======================================================
+def on_on_overlap6(sprite, otherSprite):
+    global esta_en_npc
+    esta_en_npc = True
+sprites.on_overlap(SpriteKind.player, SpriteKind.npc, on_on_overlap6)
+
+# =======================================================
+# BUCLE DE ACTUALIZACIÓN
+# =======================================================
+def on_update_interval():
+    global esta_en_npc
+    # Mostrar mensaje solo si está sobre el NPC y el menú NO está abierto
+    if esta_en_npc and not estado_menu:
+        game.show_long_text("¿Quieres intercambiar? Presiona A.", DialogLayout.BOTTOM)
     
-})
-//  =======================================================
-//  COLISIÓN CON NPC
-//  =======================================================
-sprites.onOverlap(SpriteKind.player, SpriteKind.npc, function on_on_overlap6(sprite: Sprite, otherSprite: Sprite) {
-    
-    esta_en_npc = true
-})
-//  =======================================================
-//  BUCLE DE ACTUALIZACIÓN
-//  =======================================================
-game.onUpdateInterval(500, function on_update_interval() {
-    
-    //  Mostrar mensaje solo si está sobre el NPC y el menú NO está abierto
-    if (esta_en_npc && !estado_menu) {
-        game.showLongText("¿Quieres intercambiar? Presiona A.", DialogLayout.Bottom)
-    }
-    
-    //  Resetear la bandera para el próximo ciclo
-    esta_en_npc = false
-})
-//  =======================================================
-//  INICIALIZACIÓN
-//  =======================================================
-info.setScore(0)
-scene.setBackgroundImage(assets.image`paisaje`)
-villager = sprites.create(img`
+    # Resetear la bandera para el próximo ciclo
+    esta_en_npc = False
+
+game.on_update_interval(500, on_update_interval)
+
+# =======================================================
+# INICIALIZACIÓN
+# =======================================================
+info.set_score(0)
+scene.set_background_image(assets.image("paisaje"))
+
+villager = sprites.create(img("""
     . . . . . . . . . . . . . . . .
     . . . . . f f f f f f . . . . .
     . . . f f e e e e f 2 f . . . .
@@ -524,8 +523,9 @@ villager = sprites.create(img`
     . . . f f f e e f 5 5 f f . . .
     . . . f f f f f f f f f f . . .
     . . . . f f . . . f f f . . . .
-    `, SpriteKind.player)
-shop_door2 = sprites.create(img`
+    """), SpriteKind.player)
+
+shop_door2 = sprites.create(img("""
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
@@ -542,8 +542,9 @@ shop_door2 = sprites.create(img`
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
-    `, SpriteKind.shop_door)
-outside_gim_door2 = sprites.create(img`
+    """), SpriteKind.shop_door)
+
+outside_gim_door2 = sprites.create(img("""
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
@@ -560,9 +561,10 @@ outside_gim_door2 = sprites.create(img`
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
     . . . . . . . . . . . . . . . .
-    `, SpriteKind.outside_gim_door)
-shop_door2.setPosition(136, 105)
-outside_gim_door2.setPosition(12, 101)
-villager.setPosition(76, 101)
-controller.moveSprite(villager, 100, 100)
-villager.setBounceOnWall(true)
+    """), SpriteKind.outside_gim_door)
+
+shop_door2.set_position(136, 105)
+outside_gim_door2.set_position(12, 101)
+villager.set_position(76, 101)
+controller.move_sprite(villager, 100, 100)
+villager.set_bounce_on_wall(True)
