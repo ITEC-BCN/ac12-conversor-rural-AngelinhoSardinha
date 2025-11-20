@@ -7,6 +7,7 @@ namespace SpriteKind {
     export const npc = SpriteKind.create()
     export const player = SpriteKind.create()
     export const enemy = SpriteKind.create()
+    export const easter_egg = SpriteKind.create()
 }
 /**
  * =======================================================
@@ -245,6 +246,9 @@ sprites.onOverlap(SpriteKind.player, SpriteKind.inside_gim_door, function (sprit
     sprites.destroy(inside_gim_door2)
     sprites.destroy(central_park_door2)
 })
+sprites.onOverlap(SpriteKind.player, SpriteKind.easter_egg, function (sprite5, otherSprite5) {
+    scene.setBackgroundImage(assets.image`easteregg`)
+})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(estado_menu)) {
         animation.runImageAnimation(
@@ -469,6 +473,7 @@ shop_door2 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.shop_door)
+let easter_egg = sprites.create(assets.image`door3`, SpriteKind.easter_egg)
 outside_gim_door2 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -488,6 +493,7 @@ outside_gim_door2 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.outside_gim_door)
 shop_door2.setPosition(136, 105)
+easter_egg.setPosition(150, 1)
 outside_gim_door2.setPosition(12, 101)
 villager.setPosition(76, 101)
 controller.moveSprite(villager, 100, 100)
