@@ -49,6 +49,31 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "door3"
     },
+    "image10": {
+        "data": "hwQQABAAAAD//////////////////////////////////////////////x8b/////////7Hx////////EVH//////xERQf//////ERH7//////9fvf////////////////////////////////////////////////////////8AAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "gallina"
+    },
+    "image12": {
+        "data": "hwQQABAAAAD///////////////9O/v//////RUTk//////9UVUT+////T1VVTeT///9UVVVE5P//T1dVVUTk//9PVVV1RPT//09VVXVE9P//T1VVTUT+//9PXU1E5P///09ERET+/////+RE7v///////////////////////////////////w==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "papa"
+    },
+    "image13": {
+        "data": "hwQQABAAAAD///////////////////////9M/v//////zET+///////8T0T0////////RETu//////9E5P///////0/k////////T+T///////9PRP7//////09E5P//////T0T0///////v/////////////////////////////////////w==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "cabra"
+    },
+    "image14": {
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsLvMDAAAALDbvdvLAACwGxEz290MALARETPd3csAGxETEdG7zQAbERER0bvNABszERHR3c0AGzMTEbPbzQCwMRMxs9vLALAbETG73QwAALDb3d3LAAAAALC7zAwAAAAAAAAAAAAAAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "huevo"
+    },
+    "image15": {
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAsMvs7szPAADb3fvu7s4AsL27ve/u7gDbu73b7+7uANvb29v77u6wvb29vf3u7rC9vb29ze7usL29vb3N7u6wvb29vc3u7gDb29vby+7uANu7vdvs7u4AsL27ve/u7gCw29377u7OAACwy+zuzM8AAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "tronco"
+    },
     "anim1": {
         "namespace": "myAnimations",
         "id": "anim1",

@@ -658,6 +658,101 @@ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 ....................
 ....................
 `;
+            case "image10":
+            case "gallina":return img`
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f 1 1 f f f f f f . 
+f f f f 1 f f 1 1 5 f f f f f . 
+f f f f b 1 1 1 1 d f f f f f . 
+f f f f 1 b 1 1 1 b f f f f f . 
+f f f f f 1 1 1 b f f f f f f . 
+f f f f f f 5 4 f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+f f f f f f f f f f f f f f f . 
+`;
+            case "image12":
+            case "papa":return img`
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f f f f 4 4 4 4 4 4 f f f f 
+f f f f f 4 7 5 5 5 d 4 4 f f f 
+f f f f 4 5 5 5 5 5 5 4 e f f f 
+f f 5 4 5 5 5 5 5 5 d 4 4 f f f 
+f f 4 5 5 5 5 5 5 5 4 4 4 f f f 
+f e 4 5 5 5 5 5 5 d 4 4 e f f f 
+f 4 4 5 5 5 5 7 7 4 4 4 e f f f 
+f e 4 4 d 4 4 4 4 4 4 e f f f f 
+f f e 4 4 4 4 4 4 4 e f f f f f 
+f f f e 4 4 4 4 4 e f f f f f f 
+f f f f e e e f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+`;
+            case "image13":
+            case "cabra":return img`
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f c c f f f f f f f f f f f 
+f f f c f f f f f f f f f f f f 
+f f c 4 f f f f f f f f f f f f 
+f f 4 4 4 f f f f f f f f f f f 
+f f e e 4 4 4 f f f f f f f f f 
+f f f f 4 4 4 4 4 4 4 4 e f f f 
+f f f f 4 4 4 4 4 4 4 4 f f f f 
+f f f f f 4 e e e 4 4 4 f f f f 
+f f f f f e f f f e 4 4 f f f f 
+f f f f f e f f f f e f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+f f f f f f f f f f f f f f f f 
+`;
+            case "image14":
+            case "huevo":return img`
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . b b b b . . . . . . 
+. . . . b b 1 1 1 1 b b . . . . 
+. . . . b 1 1 1 3 3 1 b . . . . 
+. . . b 1 1 1 1 3 3 3 1 b . . . 
+. . . b 1 1 3 1 1 3 3 1 b . . . 
+. . b d 1 1 1 1 1 1 1 1 d b . . 
+. . b d 3 3 1 1 1 1 1 1 d b . . 
+. . b b 3 3 1 1 1 1 3 3 d b . . 
+. . c b b d 1 1 1 3 3 b d c . . 
+. . c d d d d d d b b b d c . . 
+. . c b d d b b d b b d b c . . 
+. . . c d d b b d d d d c . . . 
+. . . . c b d d d d b c . . . . 
+. . . . . c c c c c c . . . . . 
+`;
+            case "image15":
+            case "tronco":return img`
+. . . . . . . . . . . . . . . . 
+. . . . . . b b b b . . . . . . 
+. . . . b b d d d d b b . . . . 
+. . . b d d b b b b d d b b . . 
+. . b d b b d d d d b b d b . . 
+. b d b b d b b b b d b b d b . 
+. b d b d b d d d d b d b d b . 
+. c d b b d b b b b d b b d c . 
+. c b d b b d d d d b b d b c . 
+. e f b d d b b b b d d b f e . 
+. e e f f b d d d d b c f e e . 
+. e e e e f f c c c c e e e e . 
+. c e e e e e e e e e e e e c . 
+. c e e e e e e e e e e e e c . 
+. f e e e e e e e e e e e e f . 
+. c c e e e e e e e e e e c c . 
+`;
         }
         return null;
     })
